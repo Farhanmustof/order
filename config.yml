@@ -1,0 +1,7 @@
+tunnel: 326a46b6-8fe8-4ac8-bfa4-36e0f65923c2
+credentials-file: C:\Users\Lenovo\.cloudflared\326a46b6-8fe8-4ac8-bfa4-36e0f65923c2.json
+
+ingress:
+  - hostname: app.preorderin.com
+    service: http://localhost:8000
+  - service: http_status:404
