@@ -7,6 +7,16 @@
     $currentIndex = array_search($order->status, $flow, true);
     $openPlan = $order->planItems->map->plan->filter(fn ($p) => $p && $p->status->isOpen())->first();
     $plans = $order->planItems->map->plan->filter()->unique('id');
+    $wa = preg_replace('/\D/', '', (string) $order->customer_phone);
+    if (str_starts_with($wa, '0')) {
+        $wa = '62' . substr($wa, 1);
+    }
+    $sisa = max(0, $order->total - $order->down_payment);
+    $pesanWa = "Halo {$order->customer_name}, kami dari Delicio. "
+        ."Pesanan {$order->number} untuk tanggal ".tanggal($order->due_date)
+        ." sebesar ".rupiah($order->total)."."
+        .($sisa > 0 ? " Sisa pembayaran ".rupiah($sisa)."." : " Pembayaran sudah lunas.")
+        ." Terima kasih.";
 @endphp
 
 @section('content')
@@ -18,6 +28,9 @@
     </div>
     <div class="actions">
         <button type="button" class="btn btn-light" onclick="window.print()">Cetak</button>
+                @if ($wa)
+            <a href="https://wa.me/{{ $wa }}?text={{ urlencode($pesanWa) }}" target="_blank" rel="noopener" class="btn btn-light">Kirim WhatsApp</a>
+        @endif
         @can('manage-transactions')
             @if ($order->status->isEditable() && ! $openPlan)
                 <a href="{{ route('pre-orders.edit', $order->id) }}" class="btn btn-light">Ubah</a>
