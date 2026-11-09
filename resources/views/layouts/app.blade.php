@@ -19,33 +19,50 @@
 
         <nav class="nav-group">
             <a href="{{ route('dashboard') }}" class="side-link {{ $is('dashboard') }}"><x-icon name="home"/> Beranda</a>
-            <a href="{{ route('pre-orders.index') }}" class="side-link {{ $is('pre-orders.*') }}">
-                <x-icon name="order"/> Pre-order
-                @if (($navCounts['overdue'] ?? 0) > 0)
-                    <span class="count" title="Pre-order lewat jatuh tempo">{{ $navCounts['overdue'] }}</span>
-                @endif
-            </a>
-            <a href="{{ route('production.index') }}" class="side-link {{ $is('production.*') }}"><x-icon name="oven"/> Rencana produksi</a>
-            <a href="{{ route('inventory.index') }}" class="side-link {{ $is('inventory.index', 'inventory.show', 'stock-in.*', 'stock-out.*', 'materials.*') }}"><x-icon name="box"/> Stok bahan baku</a>
+            @can('pre-order.lihat')
+                <a href="{{ route('pre-orders.index') }}" class="side-link {{ $is('pre-orders.*') }}">
+                    <x-icon name="order"/> Pre-order
+                    @if (($navCounts['overdue'] ?? 0) > 0)
+                        <span class="count" title="Pre-order lewat jatuh tempo">{{ $navCounts['overdue'] }}</span>
+                    @endif
+                </a>
+            @endcan
+            @can('produksi.lihat')
+                <a href="{{ route('production.index') }}" class="side-link {{ $is('production.*') }}"><x-icon name="oven"/> Rencana produksi</a>
+            @endcan
+            @can('stok.lihat')
+                <a href="{{ route('inventory.index') }}" class="side-link {{ $is('inventory.index', 'inventory.show', 'stock-in.*', 'stock-out.*', 'materials.*') }}"><x-icon name="box"/> Stok bahan baku</a>
+            @endcan
+            @can('pembelian.lihat')
+                <a href="{{ route('purchases.index') }}" class="side-link {{ $is('purchases.*') }}"><x-icon name="truck"/> Pemesanan supplier</a>
+            @endcan
         </nav>
 
-        <nav class="nav-group">
-            <div class="nav-group-title">Data pendukung</div>
-            <a href="{{ route('products.index') }}" class="side-link {{ $is('products.*') }}"><x-icon name="recipe"/> Produk &amp; resep</a>
-            <a href="{{ route('suppliers.index') }}" class="side-link {{ $is('suppliers.*') }}"><x-icon name="truck"/> Supplier</a>
-            <a href="{{ route('inventory.movements') }}" class="side-link {{ $is('inventory.movements') }}"><x-icon name="history"/> Riwayat stok</a>
-        </nav>
+        @canany(['produk.lihat', 'supplier.lihat', 'stok.lihat'])
+            <nav class="nav-group">
+                <div class="nav-group-title">Data pendukung</div>
+                @can('produk.lihat')
+                    <a href="{{ route('products.index') }}" class="side-link {{ $is('products.*') }}"><x-icon name="recipe"/> Produk &amp; resep</a>
+                @endcan
+                @can('supplier.lihat')
+                    <a href="{{ route('suppliers.index') }}" class="side-link {{ $is('suppliers.*') }}"><x-icon name="truck"/> Supplier</a>
+                @endcan
+                @can('stok.lihat')
+                    <a href="{{ route('inventory.movements') }}" class="side-link {{ $is('inventory.movements') }}"><x-icon name="history"/> Riwayat stok</a>
+                @endcan
+            </nav>
+        @endcanany
 
-        @canany(['manage-users', 'view-audit-log', 'restore-data'])
+        @canany(['pengguna.kelola', 'riwayat-aktivitas.lihat', 'data-terhapus.kelola'])
             <nav class="nav-group">
                 <div class="nav-group-title">Pengawasan</div>
-                @can('manage-users')
+                @can('pengguna.kelola')
                     <a href="{{ route('users.index') }}" class="side-link {{ $is('users.*') }}"><x-icon name="users"/> Pengguna</a>
                 @endcan
-                @can('view-audit-log')
+                @can('riwayat-aktivitas.lihat')
                     <a href="{{ route('audit.index') }}" class="side-link {{ $is('audit.*') }}"><x-icon name="shield"/> Riwayat aktivitas</a>
                 @endcan
-                @can('restore-data')
+                @can('data-terhapus.kelola')
                     <a href="{{ route('trash.index') }}" class="side-link {{ $is('trash.*') }}"><x-icon name="trash"/> Data terhapus</a>
                 @endcan
             </nav>

@@ -18,7 +18,7 @@
     </div>
     <div class="actions">
         <button type="button" class="btn btn-light" onclick="window.print()">Cetak</button>
-        @can('manage-transactions')
+        @can('produksi.kelola')
             @if ($plan->status === ProductionStatus::Planned)
                 <a href="{{ route('production.edit', $plan->id) }}" class="btn btn-light">Ubah</a>
             @endif
@@ -38,7 +38,7 @@
             </ol>
         @endif
     </div>
-    @can('manage-transactions')
+    @can('produksi.kelola')
         @if ($plan->status->isOpen())
             <div class="panel-foot d-flex flex-wrap align-items-center gap-2 no-print">
                 @if ($plan->status === ProductionStatus::Planned)
@@ -68,13 +68,13 @@
     @if ($requirements['missing_recipes'])
         <div class="alert alert-warning">
             Produk berikut belum punya resep, sehingga kebutuhan bahannya tidak terhitung: <strong>{{ implode(', ', $requirements['missing_recipes']) }}</strong>.
-            @can('manage-master-data') Lengkapi di menu <a href="{{ route('products.index') }}">Produk &amp; resep</a>. @else Minta admin melengkapinya. @endcan
+            @can('produk.kelola') Lengkapi di menu <a href="{{ route('products.index') }}">Produk &amp; resep</a>. @else Minta admin melengkapinya. @endcan
         </div>
     @endif
     @if ($shortages->isNotEmpty())
         <div class="alert alert-danger">
             <strong>{{ $shortages->count() }} bahan kurang.</strong> Produksi belum bisa ditandai selesai sampai stoknya cukup.
-            @can('manage-transactions') <a href="{{ route('stock-in.create') }}">Catat stok masuk</a>. @endcan
+            @can('stok.kelola') <a href="{{ route('stock-in.create') }}">Catat stok masuk</a>. @endcan
         </div>
     @endif
 @endif
@@ -175,7 +175,7 @@
         <section class="panel">
             <div class="panel-head"><h2>Catatan</h2></div>
             <div class="panel-body">{!! $plan->notes ? nl2br(e($plan->notes)) : '<span class="text-muted">Tidak ada catatan.</span>' !!}</div>
-            @can('manage-transactions')
+            @can('produksi.kelola')
                 @if (in_array($plan->status, [ProductionStatus::Planned, ProductionStatus::Cancelled], true))
                     <div class="panel-foot no-print">
                         <x-delete-button :action="route('production.destroy', $plan->id)" label="Hapus rencana"

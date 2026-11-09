@@ -101,6 +101,18 @@ final class PreOrder
         $this->status = PreOrderStatus::Confirmed;
     }
 
+    /** Fitur tambahan: pelanggan membayar sisa tagihan, jadi yang dibayar = total. */
+    public function markAsPaid(): void
+    {
+        if ($this->status === PreOrderStatus::Cancelled) {
+            throw new BusinessRuleException('Pre-order yang dibatalkan tidak bisa dilunasi.');
+        }
+        if ($this->remainingPayment() <= 0) {
+            throw new BusinessRuleException('Pre-order ini sudah lunas.');
+        }
+        $this->downPayment = $this->total();
+    }
+
     public function ensureDeletable(): void
     {
         if (! $this->status->isDeletable()) {

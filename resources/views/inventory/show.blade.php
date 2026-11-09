@@ -9,10 +9,10 @@
         <p class="sub">{{ $material->code }} · satuan {{ $material->unit }}{{ $material->notes ? ' · '.$material->notes : '' }}</p>
     </div>
     <div class="actions">
-        @can('manage-master-data')
+        @can('produk.kelola')
             <a href="{{ route('materials.edit', $material->id) }}" class="btn btn-light">Ubah data bahan</a>
         @endcan
-        @can('manage-transactions')
+        @can('stok.kelola')
             <a href="{{ route('stock-out.create', ['bahan' => $material->id]) }}" class="btn btn-light">Catat stok keluar</a>
             <a href="{{ route('stock-in.create', ['bahan' => $material->id]) }}" class="btn btn-primary"><x-icon name="plus" width="16" height="16"/> Catat stok masuk</a>
         @endcan
@@ -44,7 +44,7 @@
     <div class="panel-head"><h2>Batch stok</h2><span class="hint">Urutan pemakaian otomatis: kedaluwarsa terdekat dulu (FEFO)</span></div>
     @if ($batches->isEmpty())
         <x-empty title="Belum ada stok masuk untuk bahan ini."
-                 :action="auth()->user()->can('manage-transactions') ? 'Catat stok masuk' : null"
+                 :action="auth()->user()->can('stok.kelola') ? 'Catat stok masuk' : null"
                  :href="route('stock-in.create', ['bahan' => $material->id])"></x-empty>
     @else
         <div class="table-responsive">
@@ -70,7 +70,7 @@
                         <td class="num fw-semibold">{{ $b->quantity_remaining > 0 ? qty($b->quantity_remaining) : 'habis' }}</td>
                         <td class="num">{{ rupiah($b->unit_cost) }}</td>
                         <td class="text-end text-nowrap">
-                            @can('manage-transactions')
+                            @can('stok.kelola')
                                 <a href="{{ route('stock-in.edit', $b->id) }}" class="small me-2">Ubah</a>
                                 @if ($b->quantity_remaining > 0 && $d !== null && $d < 0)
                                     <a href="{{ route('stock-out.create', ['bahan' => $material->id, 'batch' => $b->id]) }}" class="small me-2">Buang</a>
@@ -111,7 +111,7 @@
                 </ul>
             @endif
         </section>
-        @can('manage-master-data')
+        @can('produk.kelola')
             <div class="mt-3 text-end">
                 <x-delete-button :action="route('materials.destroy', $material->id)" label="Hapus bahan baku ini"
                                  confirm="Hapus bahan {{ $material->name }}? Hanya bisa bila stok kosong dan tidak dipakai resep."/>

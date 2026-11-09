@@ -15,21 +15,28 @@ final class EloquentUserRepository implements UserRepository
         return $user ? ['role' => $user->role, 'is_active' => $user->is_active] : null;
     }
 
-    public function create(string $name, string $email, string $plainPassword, Role $role, bool $isActive): int
+    public function create(string $name, string $email, string $plainPassword, Role $role, bool $isActive, ?array $permissions = null): int
     {
         return User::create([
             'name' => $name,
             'email' => strtolower($email),
             'password' => $plainPassword, // di-hash otomatis oleh cast 'hashed'
             'role' => $role,
+            'permissions' => $role === Role::Admin ? null : $permissions,
             'is_active' => $isActive,
         ])->id;
     }
 
-    public function update(int $id, string $name, string $email, Role $role, bool $isActive, ?string $plainPassword): void
+    public function update(int $id, string $name, string $email, Role $role, bool $isActive, ?string $plainPassword, ?array $permissions = null): void
     {
         $user = User::findOrFail($id);
-        $user->fill(['name' => $name, 'email' => strtolower($email), 'role' => $role, 'is_active' => $isActive]);
+        $user->fill([
+            'name' => $name,
+            'email' => strtolower($email),
+            'role' => $role,
+            'permissions' => $role === Role::Admin ? null : $permissions,
+            'is_active' => $isActive,
+        ]);
         if ($plainPassword) {
             $user->password = $plainPassword;
         }

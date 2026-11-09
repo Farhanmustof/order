@@ -7,7 +7,7 @@
         <h1>Supplier</h1>
         <p class="sub">Pemasok bahan baku. Dipilih saat mencatat stok masuk.</p>
     </div>
-    @can('manage-master-data')
+    @can('supplier.kelola')
         <div class="actions"><a href="{{ route('suppliers.create') }}" class="btn btn-primary"><x-icon name="plus" width="16" height="16"/> Tambah supplier</a></div>
     @endcan
 </div>
@@ -24,7 +24,7 @@
     </div>
     @if ($suppliers->isEmpty())
         <x-empty title="Belum ada supplier."
-                 :action="auth()->user()->can('manage-master-data') ? 'Tambah supplier' : null"
+                 :action="auth()->user()->can('supplier.kelola') ? 'Tambah supplier' : null"
                  :href="route('suppliers.create')"></x-empty>
     @else
         <div class="table-responsive">
@@ -38,7 +38,7 @@
                         <td class="small">{{ $s->address ?: '-' }}</td>
                         <td class="num">{{ $s->batches_count }}</td>
                         <td class="text-end text-nowrap">
-                            @can('manage-master-data')
+                            @can('supplier.kelola')
                                 <a href="{{ route('suppliers.edit', $s->id) }}" class="small me-2">Ubah</a>
                                 <x-delete-button :action="route('suppliers.destroy', $s->id)" confirm="Hapus supplier {{ $s->name }}?" class="small"/>
                             @endcan

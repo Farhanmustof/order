@@ -35,6 +35,44 @@
                         </div>
                     @endforeach
                 </fieldset>
+                {{-- Hak akses per menu --}}
+                @php
+                    $currentRole = old('role', $user?->role->value ?? 'user');
+                    $checked = old('permissions', $user ? $user->permissionValues() : \App\Domain\Auth\Role::from($currentRole)->permissionValues());
+                    $defaults = collect($roles)->mapWithKeys(fn ($r) => [$r->value => $r->permissionValues()]);
+                @endphp
+                <fieldset class="mb-4" id="permission-box" data-defaults='@json($defaults)'>
+                    <legend class="form-label float-none">Hak akses per menu</legend>
+                    <p class="form-text mt-0" id="permission-admin-note" @if ($currentRole !== 'admin') hidden @endif>
+                        Admin selalu bisa membuka dan mengubah semua menu.
+                    </p>
+                    <div class="table-responsive" id="permission-table" @if ($currentRole === 'admin') hidden @endif>
+                        <table class="table mb-1">
+                            <thead><tr><th>Menu</th><th class="text-center">Lihat</th><th class="text-center">Kelola</th></tr></thead>
+                            <tbody>
+                            @foreach ($menus as $menu => [$view, $manage])
+                                <tr>
+                                    <td>{{ $menu }}</td>
+                                    @foreach ([$view, $manage] as $permission)
+                                        <td class="text-center">
+                                            @if ($permission)
+                                                <input class="form-check-input" type="checkbox" name="permissions[]" value="{{ $permission->value }}"
+                                                       aria-label="{{ $menu }}: {{ $loop->first ? 'lihat' : 'kelola' }}"
+                                                       @if (! $loop->first && $view) data-needs="{{ $view->value }}" @endif
+                                                       @checked(in_array($permission->value, $checked, true))>
+                                            @else
+                                                <span class="text-muted">–</span>
+                                            @endif
+                                        </td>
+                                    @endforeach
+                                </tr>
+                            @endforeach
+                            </tbody>
+                        </table>
+                        <div class="form-text">Kelola = boleh menambah, mengubah, dan menghapus. Mencentang Kelola otomatis mencentang Lihat. Saat level akun diganti, centang kembali ke bawaan level itu.</div>
+                    </div>
+                </fieldset>
+
                 <div class="form-check form-switch mb-4">
                     <input type="hidden" name="is_active" value="0">
                     <input class="form-check-input" type="checkbox" role="switch" name="is_active" id="is_active" value="1"
@@ -61,4 +99,32 @@
         </form>
     </div>
 </div>
+@push('scripts')
+<script>
+    // Hak akses: ikut level akun yang dipilih, dan "Kelola" selalu membawa "Lihat".
+    (function () {
+        const box = document.getElementById('permission-box');
+        const defaults = JSON.parse(box.dataset.defaults);
+        const boxes = box.querySelectorAll('input[name="permissions[]"]');
+        document.querySelectorAll('input[name="role"]').forEach(function (radio) {
+            radio.addEventListener('change', function () {
+                const isAdmin = radio.value === 'admin';
+                document.getElementById('permission-table').hidden = isAdmin;
+                document.getElementById('permission-admin-note').hidden = !isAdmin;
+                boxes.forEach(function (cb) { cb.checked = defaults[radio.value].includes(cb.value); });
+            });
+        });
+        boxes.forEach(function (cb) {
+            cb.addEventListener('change', function () {
+                if (cb.checked && cb.dataset.needs) {
+                    box.querySelector('input[value="' + cb.dataset.needs + '"]').checked = true;
+                }
+                if (!cb.checked) {
+                    box.querySelectorAll('input[data-needs="' + cb.value + '"]').forEach(function (m) { m.checked = false; });
+                }
+            });
+        });
+    })();
+</script>
+@endpush
 @endsection

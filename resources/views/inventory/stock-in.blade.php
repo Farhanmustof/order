@@ -29,7 +29,7 @@
                             @endforeach
                         </select>
                         @if ($batch)<input type="hidden" name="raw_material_id" value="{{ $batch->raw_material_id }}">@endif
-                        @can('manage-master-data')
+                        @can('produk.kelola')
                             <div class="form-text">Bahan belum ada? <a href="{{ route('materials.create') }}">Tambah bahan baku</a>.</div>
                         @endcan
                     </div>

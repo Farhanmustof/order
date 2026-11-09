@@ -7,7 +7,7 @@
         <h1>Rencana produksi</h1>
         <p class="sub">Satu rencana = satu sesi produksi. Saat ditandai selesai, bahan baku terpotong otomatis sesuai resep.</p>
     </div>
-    @can('manage-transactions')
+    @can('produksi.kelola')
         <div class="actions"><a href="{{ route('production.create') }}" class="btn btn-primary"><x-icon name="plus" width="16" height="16"/> Rencana baru</a></div>
     @endcan
 </div>
@@ -39,7 +39,7 @@
 
     @if ($plans->isEmpty())
         <x-empty title="Belum ada rencana produksi."
-                 :action="auth()->user()->can('manage-transactions') ? 'Buat rencana produksi' : null"
+                 :action="auth()->user()->can('produksi.kelola') ? 'Buat rencana produksi' : null"
                  :href="route('production.create')">Rencana bisa berisi beberapa pre-order sekaligus plus produksi tambahan untuk stok toko.</x-empty>
     @else
         <div class="table-responsive">

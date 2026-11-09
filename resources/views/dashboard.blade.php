@@ -7,13 +7,17 @@
         <h1>Halo, {{ strtok(auth()->user()->name, ' ') }}</h1>
         <p class="today">{{ now()->translatedFormat('l, d F Y') }}</p>
     </div>
-    @can('manage-transactions')
-        <div class="actions">
+    <div class="actions">
+        @can('stok.kelola')
             <a href="{{ route('stock-in.create') }}" class="btn btn-light">Catat stok masuk</a>
+        @endcan
+        @can('produksi.kelola')
             <a href="{{ route('production.create') }}" class="btn btn-light">Buat rencana produksi</a>
+        @endcan
+        @can('pre-order.kelola')
             <a href="{{ route('pre-orders.create') }}" class="btn btn-primary"><x-icon name="plus" width="16" height="16"/> Pre-order baru</a>
-        </div>
-    @endcan
+        @endcan
+    </div>
 </div>
 
 <div class="figures mb-4">
@@ -85,7 +89,7 @@
             </div>
             @if ($plans->isEmpty())
                 <x-empty title="Belum ada produksi yang dijadwalkan."
-                         :action="auth()->user()->can('manage-transactions') ? 'Buat rencana produksi' : null"
+                         :action="auth()->user()->can('produksi.kelola') ? 'Buat rencana produksi' : null"
                          :href="route('production.create')">Gabungkan pre-order yang sudah dikonfirmasi menjadi satu rencana.</x-empty>
             @else
                 <div class="table-responsive">
@@ -110,6 +114,30 @@
     </div>
 
     <div class="col-lg-5">
+        {{-- Fitur tambahan: produk terlaris bulan ini --}}
+        <section class="panel">
+            <div class="panel-head"><h2>Produk terlaris bulan ini</h2></div>
+            @if ($top_products->isEmpty())
+                <x-empty title="Belum ada pesanan bulan ini."></x-empty>
+            @else
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead><tr><th>#</th><th>Produk</th><th class="num">Dipesan</th><th class="num">Penjualan</th></tr></thead>
+                        <tbody>
+                        @foreach ($top_products as $i => $p)
+                            <tr>
+                                <td>{{ $i + 1 }}</td>
+                                <td>{{ $p->name }}</td>
+                                <td class="num">{{ qty($p->total_qty) }} {{ $p->unit }}</td>
+                                <td class="num">{{ rupiah($p->total_sales) }}</td>
+                            </tr>
+                        @endforeach
+                        </tbody>
+                    </table>
+                </div>
+            @endif
+        </section>
+
         <section class="panel">
             <div class="panel-head">
                 <h2>Stok yang perlu diperhatikan</h2>

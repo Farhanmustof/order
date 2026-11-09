@@ -19,17 +19,19 @@ final class ManageUser
     ) {
     }
 
-    public function create(string $name, string $email, string $password, Role $role, bool $isActive, int $actorId): int
+    /** @param string[]|null $permissions hak akses yang dicentang; null = bawaan level akun */
+    public function create(string $name, string $email, string $password, Role $role, bool $isActive, int $actorId, ?array $permissions = null): int
     {
-        return $this->tx->run(function () use ($name, $email, $password, $role, $isActive, $actorId) {
-            $id = $this->users->create($name, $email, $password, $role, $isActive);
+        return $this->tx->run(function () use ($name, $email, $password, $role, $isActive, $actorId, $permissions) {
+            $id = $this->users->create($name, $email, $password, $role, $isActive, $permissions);
             $this->audit->log($actorId, 'create', 'user', $id, "Membuat akun {$name} sebagai {$role->label()}");
 
             return $id;
         });
     }
 
-    public function update(int $id, string $name, string $email, Role $role, bool $isActive, ?string $password, int $actorId): void
+    /** @param string[]|null $permissions hak akses yang dicentang; null = bawaan level akun */
+    public function update(int $id, string $name, string $email, Role $role, bool $isActive, ?string $password, int $actorId, ?array $permissions = null): void
     {
         $current = $this->users->find($id) ?? throw NotFoundException::of('Akun');
 
@@ -43,8 +45,8 @@ final class ManageUser
             throw new BusinessRuleException('Harus ada minimal satu admin aktif.');
         }
 
-        $this->tx->run(function () use ($id, $name, $email, $role, $isActive, $password, $actorId) {
-            $this->users->update($id, $name, $email, $role, $isActive, $password ?: null);
+        $this->tx->run(function () use ($id, $name, $email, $role, $isActive, $password, $actorId, $permissions) {
+            $this->users->update($id, $name, $email, $role, $isActive, $password ?: null, $permissions);
             $this->audit->log($actorId, 'update', 'user', $id, "Mengubah akun {$name}");
         });
     }

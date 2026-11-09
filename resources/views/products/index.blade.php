@@ -7,7 +7,7 @@
         <h1>Produk &amp; resep</h1>
         <p class="sub">Resep menentukan berapa bahan baku yang dipotong dari stok untuk setiap 1 satuan produk.</p>
     </div>
-    @can('manage-master-data')
+    @can('produk.kelola')
         <div class="actions"><a href="{{ route('products.create') }}" class="btn btn-primary"><x-icon name="plus" width="16" height="16"/> Tambah produk</a></div>
     @endcan
 </div>
@@ -24,7 +24,7 @@
     </div>
     @if ($products->isEmpty())
         <x-empty title="Belum ada produk."
-                 :action="auth()->user()->can('manage-master-data') ? 'Tambah produk pertama' : null"
+                 :action="auth()->user()->can('produk.kelola') ? 'Tambah produk pertama' : null"
                  :href="route('products.create')">Tambahkan produk beserta resepnya agar kebutuhan bahan bisa dihitung.</x-empty>
     @else
         <div class="table-responsive">
@@ -43,7 +43,7 @@
                             @endif
                         </td>
                         <td class="text-end text-nowrap">
-                            @can('manage-master-data')
+                            @can('produk.kelola')
                                 <a href="{{ route('products.edit', $p->id) }}" class="small me-2">Ubah</a>
                                 <x-delete-button :action="route('products.destroy', $p->id)" confirm="Hapus produk {{ $p->name }}?" class="small"/>
                             @endcan

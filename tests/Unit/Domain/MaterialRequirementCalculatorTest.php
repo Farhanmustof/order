@@ -27,10 +27,10 @@ class MaterialRequirementCalculatorTest extends TestCase
 
     public function test_hak_akses_per_level(): void
     {
-        $this->assertTrue(Role::Admin->can(Permission::ManageUsers));
-        $this->assertTrue(Role::User->can(Permission::ManageTransactions));
-        $this->assertFalse(Role::User->can(Permission::ManageMasterData));
-        $this->assertTrue(Role::Direksi->can(Permission::ViewData));
-        $this->assertFalse(Role::Direksi->can(Permission::ManageTransactions));
+        $this->assertTrue(Role::Admin->can(Permission::UserManage));
+        $this->assertTrue(Role::User->can(Permission::PreOrderManage));
+        $this->assertFalse(Role::User->can(Permission::ProductManage));
+        $this->assertTrue(Role::Direksi->can(Permission::PreOrderView));
+        $this->assertFalse(Role::Direksi->can(Permission::PreOrderManage));
     }
 }

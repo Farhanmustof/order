@@ -7,12 +7,14 @@
     $currentIndex = array_search($order->status, $flow, true);
     $openPlan = $order->planItems->map->plan->filter(fn ($p) => $p && $p->status->isOpen())->first();
     $plans = $order->planItems->map->plan->filter()->unique('id');
+
+    // Fitur tambahan: nomor WhatsApp pelanggan (08xx diubah jadi 628xx)
     $wa = preg_replace('/\D/', '', (string) $order->customer_phone);
     if (str_starts_with($wa, '0')) {
-        $wa = '62' . substr($wa, 1);
+        $wa = '62'.substr($wa, 1);
     }
     $sisa = max(0, $order->total - $order->down_payment);
-    $pesanWa = "Halo {$order->customer_name}, kami dari Delicio. "
+    $pesanWa = "Halo {$order->customer_name}, kami dari Dapur Produksi. "
         ."Pesanan {$order->number} untuk tanggal ".tanggal($order->due_date)
         ." sebesar ".rupiah($order->total)."."
         .($sisa > 0 ? " Sisa pembayaran ".rupiah($sisa)."." : " Pembayaran sudah lunas.")
@@ -28,10 +30,10 @@
     </div>
     <div class="actions">
         <button type="button" class="btn btn-light" onclick="window.print()">Cetak</button>
-                @if ($wa)
+        @if ($wa)
             <a href="https://wa.me/{{ $wa }}?text={{ urlencode($pesanWa) }}" target="_blank" rel="noopener" class="btn btn-light">Kirim WhatsApp</a>
         @endif
-        @can('manage-transactions')
+        @can('pre-order.kelola')
             @if ($order->status->isEditable() && ! $openPlan)
                 <a href="{{ route('pre-orders.edit', $order->id) }}" class="btn btn-light">Ubah</a>
             @endif
@@ -52,7 +54,7 @@
         @endif
     </div>
 
-    @can('manage-transactions')
+    @can('pre-order.kelola')
         @if ($order->status->nextStatuses())
             <div class="panel-foot d-flex flex-wrap align-items-center gap-2 no-print">
                 @if ($openPlan)
@@ -123,6 +125,17 @@
                     <span class="total">Sisa pembayaran</span>
                     <span class="total text-end">{{ $order->total - $order->down_payment > 0 ? rupiah($order->total - $order->down_payment) : 'Lunas' }}</span>
                 </div>
+
+                {{-- Fitur tambahan: tombol pelunasan --}}
+                @can('pre-order.kelola')
+                    @if ($sisa > 0 && $order->status !== PreOrderStatus::Cancelled)
+                        <form method="POST" action="{{ route('pre-orders.paid', $order->id) }}" class="mt-3 text-end no-print"
+                              data-confirm="Catat pelunasan {{ rupiah($sisa) }} untuk pre-order ini?">
+                            @csrf @method('PATCH')
+                            <button type="submit" class="btn btn-primary btn-sm">Tandai lunas</button>
+                        </form>
+                    @endif
+                @endcan
             </div>
         </section>
     </div>
@@ -146,7 +159,7 @@
                     <dt>Diubah</dt><dd>{{ $order->editor?->name ?? '-' }}<span class="cell-sub">{{ $order->updated_at->translatedFormat('d M Y H:i') }}</span></dd>
                 </dl>
             </div>
-            @can('manage-transactions')
+            @can('pre-order.kelola')
                 @if ($order->status->isDeletable() && ! $openPlan)
                     <div class="panel-foot no-print">
                         <x-delete-button :action="route('pre-orders.destroy', $order->id)" label="Hapus pre-order"

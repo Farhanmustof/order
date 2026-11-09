@@ -9,10 +9,10 @@
     </div>
     <div class="actions">
         <a href="{{ route('inventory.export') }}" class="btn btn-light"><x-icon name="download" width="16" height="16"/> Ekspor ke Excel</a>
-        @can('manage-master-data')
+        @can('produk.kelola')
             <a href="{{ route('materials.create') }}" class="btn btn-light">Tambah bahan</a>
         @endcan
-        @can('manage-transactions')
+        @can('stok.kelola')
             <a href="{{ route('stock-out.create') }}" class="btn btn-light">Catat stok keluar</a>
             <a href="{{ route('stock-in.create') }}" class="btn btn-primary"><x-icon name="plus" width="16" height="16"/> Catat stok masuk</a>
         @endcan
@@ -40,7 +40,7 @@
 
     @if ($materials->isEmpty())
         <x-empty title="Tidak ada bahan baku yang cocok."
-                 :action="auth()->user()->can('manage-master-data') ? 'Tambah bahan baku' : null"
+                 :action="auth()->user()->can('produk.kelola') ? 'Tambah bahan baku' : null"
                  :href="route('materials.create')">Ubah pencarian atau filter di atas.</x-empty>
     @else
         <div class="table-responsive">

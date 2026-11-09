@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Application\PreOrder\ChangePreOrderStatus;
 use App\Application\PreOrder\CreatePreOrder;
 use App\Application\PreOrder\DeletePreOrder;
+use App\Application\PreOrder\MarkPreOrderPaid;
 use App\Application\PreOrder\PreOrderInput;
 use App\Application\PreOrder\UpdatePreOrder;
 use App\Domain\PreOrder\PreOrderStatus;
@@ -72,6 +73,14 @@ class PreOrderController extends Controller
         $useCase->execute($id, $status, $this->actorId());
 
         return back()->with('success', "Status pre-order sekarang {$status->label()}.");
+    }
+
+    // Fitur tambahan: tombol "Tandai lunas"
+    public function markPaid(int $id, MarkPreOrderPaid $useCase)
+    {
+        $paid = $useCase->execute($id, $this->actorId());
+
+        return back()->with('success', 'Pelunasan '.rupiah($paid).' dicatat. Pre-order sudah lunas.');
     }
 
     public function destroy(int $id, DeletePreOrder $useCase)

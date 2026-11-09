@@ -13,6 +13,7 @@ use App\Domain\Inventory\RawMaterialRepository;
 use App\Domain\Inventory\StockRepository;
 use App\Domain\PreOrder\PreOrderRepository;
 use App\Domain\Production\ProductionPlanRepository;
+use App\Domain\Purchasing\PurchaseOrderRepository;
 use App\Infrastructure\Persistence\Repositories;
 use App\Infrastructure\Services;
 use Illuminate\Support\ServiceProvider;
@@ -26,6 +27,7 @@ class InfrastructureServiceProvider extends ServiceProvider
     public array $bindings = [
         PreOrderRepository::class => Repositories\EloquentPreOrderRepository::class,
         ProductionPlanRepository::class => Repositories\EloquentProductionPlanRepository::class,
+        PurchaseOrderRepository::class => Repositories\EloquentPurchaseOrderRepository::class,
         StockRepository::class => Repositories\EloquentStockRepository::class,
         RawMaterialRepository::class => Repositories\EloquentRawMaterialRepository::class,
         ProductRepository::class => Repositories\EloquentProductRepository::class,

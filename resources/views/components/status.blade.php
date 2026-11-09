@@ -2,9 +2,9 @@
 @php
     $tone = match ($status->value) {
         'draft', 'planned' => 'neutral',
-        'confirmed' => 'info',
+        'confirmed', 'ordered' => 'info',
         'in_production', 'in_progress', 'adjustment' => 'warn',
-        'completed', 'in' => 'ok',
+        'completed', 'in', 'received' => 'ok',
         'delivered', 'production' => 'done',
         'cancelled', 'waste' => 'danger',
         default => 'neutral',

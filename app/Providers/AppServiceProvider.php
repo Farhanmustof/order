@@ -23,7 +23,7 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         // Setiap Permission menjadi Gate, sehingga bisa dipakai di route (middleware "can:...")
-        // dan di tampilan (@can('manage-transactions')).
+        // dan di tampilan (@can('pre-order.kelola')).
         foreach (Permission::cases() as $permission) {
             Gate::define($permission->value, fn (User $user) => $user->hasPermission($permission));
         }

@@ -9,7 +9,7 @@
     </div>
     <div class="actions">
         <a href="{{ route('pre-orders.export', request()->query()) }}" class="btn btn-light"><x-icon name="download" width="16" height="16"/> Ekspor ke Excel</a>
-        @can('manage-transactions')
+        @can('pre-order.kelola')
             <a href="{{ route('pre-orders.create') }}" class="btn btn-primary"><x-icon name="plus" width="16" height="16"/> Pre-order baru</a>
         @endcan
     </div>
@@ -48,7 +48,7 @@
 
     @if ($orders->isEmpty())
         <x-empty title="Belum ada pre-order yang cocok."
-                 :action="auth()->user()->can('manage-transactions') ? 'Catat pre-order pertama' : null"
+                 :action="auth()->user()->can('pre-order.kelola') ? 'Catat pre-order pertama' : null"
                  :href="route('pre-orders.create')">Ubah filter atau catat pesanan baru.</x-empty>
     @else
         <div class="table-responsive">
