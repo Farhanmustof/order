@@ -1,0 +1,25 @@
+CARA MEMASANG (Hak akses per akun + Pemesanan ke supplier)
+==========================================================
+
+1. Tutup dulu "php artisan serve" kalau sedang jalan (Ctrl + C).
+
+2. Ekstrak zip ini. Di dalam folder "delicio-update" ada folder:
+   app, database, resources, routes, tests
+
+3. Salin (copy) KELIMA folder itu, lalu tempel (paste) ke folder proyek:
+   C:\xampp\htdocs\delicio
+
+   Kalau Windows bertanya file sudah ada, pilih:
+   "Replace the files in the destination" (Ganti file yang ada).
+
+4. Buka terminal di folder delicio, jalankan:
+   php artisan migrate
+   php artisan optimize:clear
+   php artisan serve
+
+5. Buka http://localhost:8000
+   - Menu baru "Pemesanan supplier" ada di bawah "Stok bahan baku".
+   - Di Pengguna -> Ubah akun ada tabel "Hak akses per menu".
+
+Catatan: akun yang centang hak aksesnya pernah disimpan ulang perlu
+dicentang lagi baris "Pemesanan ke supplier" oleh Admin.
